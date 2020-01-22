@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 
+#include "layer.hpp"
 #include "model.hpp"
 
 Sequencial:: Sequencial(uint32_t epochs, bool weight_range, bool print_to_cons)

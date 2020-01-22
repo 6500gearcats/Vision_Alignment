@@ -20,10 +20,8 @@ int main(int argc, const char **argv)
     d.push_back(1);out.push_back(d);d.clear();
     d.push_back(0);out.push_back(d);d.clear();
 
-
     Sequencial *model = new Sequencial(3, true, true);
 
-/*
     model->format_input_data(inp);
     model->format_output_data(out);
     model->add(2, "sigmoid");
@@ -32,6 +30,6 @@ int main(int argc, const char **argv)
 
     model->initialize_global_variables();
     model->run();
-*/
+
     return 0;
 }

@@ -36,12 +36,12 @@ Matrix :: Matrix(uint32_t num_rows, uint32_t num_cols)
     this->init_matrix_variables();
 }
 
-inline void Matrix :: set_matrix(Matrix *new_mat)
+/*inline*/ void Matrix :: set_matrix(Matrix *new_mat)
 {
     this->_matrix = new_mat->get_matrix();
 }
 
-inline void Matrix :: push(float val)
+/*inline*/ void Matrix :: push(float val)
 {
     this->_matrix[this->index] = val;
     this->index++;
@@ -56,7 +56,7 @@ void Matrix :: init_matrix_variables()
     }
 }
 
-inline void Matrix :: random(bool weight_range)
+/*inline*/ void Matrix :: random(bool weight_range)
 {
     uint32_t i = 0;
     if(this->num_cols == 0){
@@ -68,27 +68,27 @@ inline void Matrix :: random(bool weight_range)
     }
 }
 
-inline float Matrix :: get_value(uint32_t row_idx)
+/*inline*/ float Matrix :: get_value(uint32_t row_idx)
 {
     return this->_matrix[row_idx];
 }
 
-inline void Matrix :: point_edit(uint32_t row_idx, float new_val)
+/*inline*/ void Matrix :: point_edit(uint32_t row_idx, float new_val)
 {
     this->_matrix[row_idx] = new_val;
 }
 
-inline float Matrix :: get_value(uint32_t row_idx, uint32_t col_idx)
+/*inline*/ float Matrix :: get_value(uint32_t row_idx, uint32_t col_idx)
 {
     return this->_matrix[((this->num_rows * this->num_cols) - (this->num_cols * (this->num_rows - row_idx))) + col_idx];
 }
 
-inline void Matrix :: point_edit(uint32_t row_idx, uint32_t col_idx, float new_val)
+/*inline*/ void Matrix :: point_edit(uint32_t row_idx, uint32_t col_idx, float new_val)
 {
     this->_matrix[((this->num_rows * this->num_cols) - (this->num_cols * (this->num_rows - row_idx))) + col_idx] = new_val;
 }
 
-inline float *& Matrix :: get_matrix()
+/*inline*/ float *& Matrix :: get_matrix()
 {
     return _matrix;
 }
@@ -108,37 +108,37 @@ Layer :: Layer(uint32_t num_rows, std::string act_func)
     this->neuron_values = new Matrix(num_rows);
 }
 
-inline uint32_t Layer :: get_row()
+/*inline*/ uint32_t Layer :: get_row()
 {
     return this->neuron_values->num_rows;
 }
 
-inline uint32_t Layer :: get_col()
+/*inline*/ uint32_t Layer :: get_col()
 {
     return this->weight_values->num_cols;
 }
 
-inline void Layer :: set_variable_mat(Matrix *new_var_mat)
+/*inline*/ void Layer :: set_variable_mat(Matrix *new_var_mat)
 {
     this->weight_values->set_matrix(new_var_mat);
 }
 
-inline void Layer :: set_neuron_mat(Matrix *new_neuron_mat)
+/*inline*/ void Layer :: set_neuron_mat(Matrix *new_neuron_mat)
 {
     this->neuron_values->set_matrix(new_neuron_mat);
 }
 
-inline Matrix * Layer :: get_variable_mat()
+/*inline*/ Matrix * Layer :: get_variable_mat()
 {
     return this->weight_values;
 }
 
-inline Matrix * Layer :: get_neuron_mat()
+/*inline*/ Matrix * Layer :: get_neuron_mat()
 {
     return this->neuron_values;
 }
 
-inline float Layer :: get_point_weight_value(uint32_t row_idx, uint32_t col_idx)
+/*inline*/ float Layer :: get_point_weight_value(uint32_t row_idx, uint32_t col_idx)
 {
     return this->weight_values->get_value(row_idx, col_idx);
 }
