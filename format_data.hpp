@@ -6,13 +6,14 @@
 //  Copyright © 2019 organized-organization. All rights reserved.
 //
 
-#ifndef format_data_hpp
-#define format_data_hpp
-
 #include <iostream>
 #include <vector>
 #include <cstdlib>
 #include <fstream>
+
+#ifndef format_data_hpp
+#define format_data_hpp
+
 #define NUM_COORIDINATES 8
 #define COORIDINATES_DIMENTIONALITY 2
 #define MAX_PIXEL_LEN 155
@@ -27,12 +28,11 @@
  * @return vector of type vector of type T
  * */
 
-template <typename T> inline std::vector<T> 
-read_file(std::string file_name, uint32_t X_or_Y_data)
+inline std::vector<float> read_file(std::string file_name, uint32_t X_or_Y_data)
 {
     std::ifstream in;
     in.open(file_name);
-    std::vector<T> rVal;
+    std::vector<float> rVal;
     
     uint32_t i = 0;
     if(X_or_Y_data == 1)

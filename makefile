@@ -1,6 +1,6 @@
 OBJS = main.o layer.o model.o
 CFLAG = -Wall -g
-CC = clang
+CC = clang++
 INCLUDE = 
 LIBS = -lm
 
