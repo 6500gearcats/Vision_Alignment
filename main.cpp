@@ -31,9 +31,9 @@ int main(int argc, const char **argv)
 
     float **out = (float **)calloc(4, sizeof(float *));
     for(int i = 0; i < 4; ++i){out[i] = (float*)malloc(sizeof(float));}
-    out[0][0] = 0; out[1][0] = 1; out[2][0] = 1; out[3][0] = 0; out[3][0] = 1;
+    out[0][0] = 0; out[1][0] = 1; out[2][0] = 0; out[3][0] = 1;
 
-    Sequencial *model = new Sequencial(4, false, true, "HalfMeanSquaredErr", 0.01);
+    Sequencial *model = new Sequencial(16, 4, true, true, "HalfMeanSquaredErr", 0.01);
 
     model->add(2, "sigmoid");
     model->bias();

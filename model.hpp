@@ -24,6 +24,7 @@ public:
     void initialize_global_variables(void);
 
     void toCons(uint32_t);
+    void toCons(uint32_t, Matrix **&);
 private:
     uint32_t num_epochs;
     uint32_t num_batches;
@@ -43,7 +44,8 @@ private:
     Matrix **bias_history;
 
     void record_data(void);
-    void update(uint32_t y_index);
+    void update_stochatic(uint32_t y_index);
+    void update_batch(float tot_cost);
     void free_mat_data(void);
 };
 
