@@ -4,7 +4,7 @@ CC = clang++
 INCLUDE = 
 LIBS = -lm
 
-main: ${OBJS}
+main.out: ${OBJS}
 	${CC} ${CFLAG} -o $@ ${OBJS} ${LIBS}
 
 clean:
