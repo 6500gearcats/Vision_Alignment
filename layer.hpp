@@ -6,7 +6,7 @@
 #ifndef layer_hpp
 #define layer_hpp
 
-class Matrix
+class Matrix  
 {
 public:
     Matrix(uint32_t num_rows);
