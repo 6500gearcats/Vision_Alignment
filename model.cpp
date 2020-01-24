@@ -9,6 +9,7 @@
 Sequencial:: Sequencial(uint32_t epochs, bool weight_range, bool print_to_cons, std::string cost_name, float learning_rate)
 {
     this->num_epochs = epochs;
+    this->num_batches = 0;
     this->weight_range = weight_range;
     this->print_to_cons = print_to_cons;
     this->network = (Layer **)malloc(sizeof(Layer *));
@@ -21,6 +22,7 @@ Sequencial:: Sequencial(uint32_t epochs, bool weight_range, bool print_to_cons, 
 Sequencial :: Sequencial(uint32_t epochs, uint32_t batches, bool weight_range, bool print_to_cons, std::string cost_name, float learning_rate)
 {
     this->num_epochs = epochs;
+    if(batches == 0) std::terminate();
     this->num_batches = batches;
     this->weight_range = weight_range;
     this->print_to_cons = print_to_cons;
@@ -63,8 +65,9 @@ void Sequencial :: initialize_global_variables()
 
 void Sequencial :: run()
 {
-    uint32_t n = 0, i = 0, input_idx = 0;
+    uint32_t n = 0, i = 0, input_idx = 0, batch_idx = 0;
     Matrix *x_input_disposable;
+    Matrix **n_batch_history = (Matrix **)calloc(this->num_batches, sizeof(Matrix *));
 
     while(n < this->num_epochs)
     {
@@ -87,12 +90,32 @@ void Sequencial :: run()
             i++;
         }i=0;
         this->network[this->lSize_arr.size() - 1]->activate_output_layer();
-        
-        if(this->print_to_cons)
-            this->toCons(n+1);
 
-        this->record_data();
-        this->update(input_idx);
+        if(this->num_batches != 0){
+            n_batch_history[batch_idx] = new Matrix(this->lSize_arr[this->lSize_arr.size() - 1]);
+            while(i < this->lSize_arr[this->lSize_arr.size() - 1]){
+                n_batch_history[batch_idx]->point_edit(i, this->network[this->lSize_arr.size() - 1]->get_point_neuron_value(i));
+                i++;
+            }i=0;
+            batch_idx++;
+        }
+        if(this->num_batches != 0){
+            if(((n+1) % this->num_batches) == 0){
+                this->record_data();
+                this->update_stochatic(input_idx);
+    
+                if(this->print_to_cons)
+                    this->toCons(n+1,  n_batch_history);
+                batch_idx = 0;
+            }
+        }else{
+            this->record_data();
+            this->update_stochatic(input_idx);
+
+            if(this->print_to_cons)
+                this->toCons(n+1);
+        }
+        
         n++;
     }
 
@@ -116,35 +139,39 @@ void Sequencial :: record_data()
  * USE THE MATH
  * Everything is set to 1 as seen in the point_edit method
  * */
-void Sequencial :: update(uint32_t y_index)
+void Sequencial :: update_stochatic(uint32_t y_index)
 {
-    float dirvative = 0;
+    float dirivative = 0;
     for(int i = 0; i < lSize_arr[1]; ++i)
     {
         for(int j = 0; j < lSize_arr[2]; ++j)
         {
-            dirvative = -1 * __cost_value_derivative__(this->network[2]->get_point_neuron_value(j), this->y_data[y_index]->get_value(j), this->cost_name);
-            dirvative *= __activation_dirivative__(this->network[2]->get_point_neuron_value(j), this->act_func_arr[2]);
-            
-            dirvative *= this->learning_rate;
-            this->variable_history[1]->point_edit(i, j, this->variable_history[1]->get_value(i, j) - dirvative); //this->network[i]->get_point_weight_value(i, j));
+            dirivative = -1 * __cost_value_derivative__(this->network[2]->get_point_neuron_value(j), this->y_data[y_index]->get_value(j), this->cost_name);
+            dirivative *= __activation_dirivative__(this->network[2]->get_point_neuron_value(j), this->act_func_arr[2]);
+            dirivative *= this->network[1]->get_point_neuron_value(i);
+            dirivative *= this->learning_rate;
+            this->variable_history[1]->point_edit(i, j, this->variable_history[1]->get_value(i, j) - dirivative); //this->network[i]->get_point_weight_value(i, j));
         }
-    }
+    }dirivative=0;
 
     for(int i = 0; i < lSize_arr[0]; ++i)
     {
         for(int j = 0; j < lSize_arr[1]; ++j)
         {
+            dirivative = -1 * __cost_value_derivative__(this->network[2]->get_point_neuron_value(j), this->y_data[y_index]->get_value(j), this->cost_name);
+            dirivative *= __activation_dirivative__(this->network[2]->get_point_neuron_value(j), this->act_func_arr[2]);
+            dirivative *= this->network[1]->get_point_neuron_value(i);
+            dirivative *= this->learning_rate;
             this->variable_history[0]->point_edit(i, j, 1); //this->network[i]->get_point_weight_value(i, j));
         }
     }
-
+    
     for(int i = 0; i < this->lSize_arr.size() - 1; ++i)
     {
         if(this->bias_layer_arr[i]){
             for(int j = 0; j < this->lSize_arr[i+1]; ++j)
             {
-                this->bias_history[i]->point_edit(i, j, 1.0);
+                this->bias_history[i]->point_edit(j, this->bias_history[i]->get_value(j));
             }
         }
     }
@@ -237,14 +264,15 @@ void Sequencial :: format_output_data(float **&out)
 }
 
 uint32_t y_data_index = 0;
-void Sequencial :: toCons(uint32_t iteration)
+void Sequencial :: toCons(uint32_t iteration) // make another toCons method that takes in an array of neurons to output the history
+//                                               this should be specific for batch output
 {
-    uint32_t i = 0, j = 0;
+    uint32_t i = 0;
     if(((iteration-1) % this->input_shape[0]) == 0)
         y_data_index = 0;
     else
         y_data_index++;
-    
+
     std::cout << "\n============= " << iteration << " =============";
     while(i < this->lSize_arr.size() - 1)
     {
@@ -266,4 +294,21 @@ void Sequencial :: toCons(uint32_t iteration)
     }
     std::cout <<  "==============================";
     std::cout << "\n\n\n";
+
+}
+
+void Sequencial :: toCons(uint32_t iteration, Matrix **&n_values)
+{
+    uint32_t j = 0, i = 0;
+    std::cout << "\n============= " << iteration << " =============";
+    std::cout << "\nNeuron Outputs: \n";
+    while(i < this->num_batches)
+    {
+        while(j < this->lSize_arr[this->lSize_arr.size() - 1])
+        {
+            std::cout << n_values[i]->get_value(j) << "    Real Value: " << this->y_data[i]->get_value(j) << std::endl;
+            j++;
+        }j=0;
+        i++;
+    }
 }
