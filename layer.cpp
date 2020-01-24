@@ -6,7 +6,7 @@
 
 float random_weight(bool weight_range)
 {
-    unsigned set_range = arc4random();
+    unsigned set_range = arc4random(); 
     float rVal = (float)(arc4random() % 1000) / 1000;
     if(weight_range){
         if(set_range % 2 == 0)
