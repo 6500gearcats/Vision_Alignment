@@ -7,7 +7,7 @@
 float random_weight(bool weight_range)
 {
     unsigned set_range = arc4random();
-    float rVal = arc4random() % 1000;
+    float rVal = (float)(arc4random() % 1000) / 1000;
     if(weight_range){
         if(set_range % 2 == 0)
             return rVal;
@@ -49,7 +49,7 @@ Matrix :: Matrix(uint32_t num_rows, uint32_t num_cols)
 
 void Matrix :: init_matrix_variables()
 {
-    if(this->num_cols != 0){
+    if(this->num_cols == 0){
         this->_matrix = (float *)calloc(this->num_rows, sizeof(float));
     }else{
         this->_matrix = (float *)calloc(this->num_cols * this->num_rows, sizeof(float));
@@ -59,12 +59,20 @@ void Matrix :: init_matrix_variables()
 /*inline*/ void Matrix :: random(bool weight_range)
 {
     uint32_t i = 0;
-    if(this->num_cols == 0){
-        while(i < this->num_rows){
-            this->_matrix[i] = random_weight(weight_range); i++;}
-    }else{
-        while(i < this->num_cols * this->num_rows){
-            this->_matrix[i] = random_weight(weight_range); i++;}
+    while(i < (this->num_cols * this->num_rows))
+    {
+        this->_matrix[i] = random_weight(weight_range);
+        i++;
+    }
+}
+
+/*inline*/ void Matrix :: bw_random(bool weight_range)
+{
+    uint32_t i = 0;
+    while(i < this->num_rows)
+    {
+        this->_matrix[i] = random_weight(weight_range);
+        i++;
     }
 }
 
@@ -93,13 +101,18 @@ void Matrix :: init_matrix_variables()
     return _matrix;
 }
 
-Layer :: Layer(bool weight_range, uint32_t num_rows, uint32_t num_cols, std::string act_func)
+Layer :: Layer(bool weight_range, uint32_t num_rows, uint32_t num_cols, std::string act_func, bool hasBias)
 {
     this->neuron_values = new Matrix(num_rows);
     this->weight_values = new Matrix(num_rows, num_cols);
+    this->hasBias = hasBias;
     this->act_func = act_func;
 
     this->weight_values->random(weight_range);
+    if(hasBias){
+        this->bias_values = new Matrix(num_cols);
+        this->bias_values->bw_random(weight_range);
+    }
 }
 
 Layer :: Layer(uint32_t num_rows, std::string act_func)
@@ -128,6 +141,11 @@ Layer :: Layer(uint32_t num_rows, std::string act_func)
     this->neuron_values->set_matrix(new_neuron_mat);
 }
 
+/*inline*/ void Layer :: set_bias_mat(Matrix *new_bias_mat)
+{
+    this->bias_values = new_bias_mat;
+}
+
 /*inline*/ Matrix * Layer :: get_variable_mat()
 {
     return this->weight_values;
@@ -138,9 +156,24 @@ Layer :: Layer(uint32_t num_rows, std::string act_func)
     return this->neuron_values;
 }
 
+/*inline*/ Matrix * Layer :: get_bias_mat()
+{
+    return this->bias_values;
+}
+
 /*inline*/ float Layer :: get_point_weight_value(uint32_t row_idx, uint32_t col_idx)
 {
     return this->weight_values->get_value(row_idx, col_idx);
+}
+
+/*inline*/ float Layer :: get_point_neuron_value(uint32_t row_idx)
+{
+    return this->neuron_values->get_value(row_idx);
+}
+
+/*inline*/ float Layer :: get_point_bias_value(uint32_t col_idx)
+{
+    return this->bias_values->get_value(col_idx);
 }
 
 void Layer :: feed_forward(Layer *&next_layer)
@@ -161,11 +194,17 @@ void Layer :: feed_forward(Layer *&next_layer)
         {
             node_input += this->neuron_values->get_value(j) * this->get_point_weight_value(j, i);
             j++;
-        }j=0; node_input=0;
+        }j=0;
+
+        if(this->hasBias)
+            node_input += this->bias_values->get_value(i);
+
         temp->push(node_input);
+        node_input=0;
         i++;
     }
     next_layer->set_neuron_mat(temp);
+    delete temp;
 }
 
 void Layer :: activate_output_layer()
@@ -184,17 +223,23 @@ void Layer :: activate_output_layer()
     
 }
 
+void Layer :: dealloc_variables()
+{
+    free(weight_values);
+    free(neuron_values);
+}
+
 void Layer :: toString()
 {
     uint32_t i = 0, j = 0;
-    std::cout << "Neuron Values\n";
+    std::cout << "\nNeuron Values\n";
     while(i < this->get_row())
     {
         std::cout << this->neuron_values->get_value(i) << std::endl;
         i++;
     }i=0;
 
-    std::cout << "\n\nWeight Values\n";
+    std::cout << "\nWeight Values\n";
     while(i < this->get_row())
     {
         while(j < this->get_col())
@@ -205,4 +250,14 @@ void Layer :: toString()
         std::cout << std::endl;
         i++;
     }
+    if(this->hasBias)
+    {i=0;
+        std::cout << "\nBias Values\n";
+        while(i < this->get_col())
+        {
+            std::cout << this->bias_values->get_value(i) << std::endl;
+            i++;
+        }
+    }
+
 }

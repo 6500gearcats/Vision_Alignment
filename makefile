@@ -1,4 +1,4 @@
-OBJS = main.o layer.o model.o
+OBJS = layer.o model.o main.o
 CFLAG = -Wall -g
 CC = clang++
 INCLUDE = 

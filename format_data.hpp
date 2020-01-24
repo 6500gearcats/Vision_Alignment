@@ -28,29 +28,29 @@
  * @return vector of type vector of type T
  * */
 
-inline std::vector<float> read_file(std::string file_name, uint32_t X_or_Y_data)
-{
-    std::ifstream in;
-    in.open(file_name);
-    std::vector<float> rVal;
+// inline std::vector<float> read_file(std::string file_name, uint32_t X_or_Y_data)
+// {
+//     std::ifstream in;
+//     in.open(file_name);
+//     std::vector<float> rVal;
     
-    uint32_t i = 0;
-    if(X_or_Y_data == 1)
-    {
-        while(i < COORIDINATES_DIMENTIONALITY * NUM_COORIDINATES)
-        {
-            rVal.push_back((in << i) / MAX_PIXEL_LEN);
-            i += 2;
-        }
-        return rVal;
-    }else{
-        while(i < COORIDINATES_DIMENTIONALITY * NUM_COORIDINATES)
-        {
-            rVal.push_back((in << (i+1)) / MAX_PIXEL_LEN);
-            i += 2;
-        }
-        return rVal;
-    }
-}
+//     uint32_t i = 0;
+//     if(X_or_Y_data == 1)
+//     {
+//         while(i < COORIDINATES_DIMENTIONALITY * NUM_COORIDINATES)
+//         {
+//             rVal.push_back((in << i) / MAX_PIXEL_LEN);
+//             i += 2;
+//         }
+//         return rVal;
+//     }else{
+//         while(i < COORIDINATES_DIMENTIONALITY * NUM_COORIDINATES)
+//         {
+//             rVal.push_back((in << (i+1)) / MAX_PIXEL_LEN);
+//             i += 2;
+//         }
+//         return rVal;
+//     }
+// }
 
 #endif
