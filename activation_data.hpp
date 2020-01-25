@@ -1,5 +1,6 @@
 #include <string>
 #include <cmath>
+#include "layer.hpp"
 
 #ifndef activation_data_hpp
 #define activation_data_hpp
@@ -95,28 +96,28 @@ inline float __cost_value_derivative__(float x, float y, std::string cost_name)
     }
 }
 
-inline float __cost_value_derivative__(float *x, float *y, uint32_t num_terms, std::string cost_name)
+inline float __cost_value_derivative__(Matrix *x, Matrix *y, uint32_t num_terms, std::string cost_name)
 {
     uint32_t i = 0;
     float tot_cost = 0;
     if(cost_name == "HalfMeanSquaredErr"){
         while(i < num_terms)
         {
-            tot_cost += (y[i] - x[i]);
+            tot_cost += (y->get_value(i) - x->get_value(i));
             i++;
         }
         return (2 * tot_cost) / (float)num_terms;
     }else if(cost_name == "MeanSquaredErr"){
         while(i < num_terms)
         {
-            tot_cost += 2 * (y[i] - x[i]);
+            tot_cost += 2 * (y->get_value(i) - x->get_value(i));
             i++;
         }
         return (2 * tot_cost) / (float)num_terms;
     }else if(cost_name == "HalfMeanAbsErr"){
         while(i < num_terms)
         {
-            if(x[i] > y[i])
+            if(x->get_value(i) > y->get_value(i))
                 tot_cost += 1;
             else
                 tot_cost += -1;
@@ -126,7 +127,7 @@ inline float __cost_value_derivative__(float *x, float *y, uint32_t num_terms, s
     }else if(cost_name == "MeanAbsErr"){
         while(i < num_terms)
         {
-            if(x[i] > y[i])
+            if(x->get_value(i) > y->get_value(i))
                 tot_cost += 2;
             else
                 tot_cost += -2;
