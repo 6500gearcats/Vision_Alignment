@@ -25,35 +25,41 @@ inline float __activate_value__(float x, std::string act_func)
     }
 }
 
-inline void __activate_value__(float *&x, uint32_t row_size, std::string act_func)
+inline void __activate_value__(Matrix *&x, uint32_t row_size, std::string act_func)
 {
     uint32_t i = 0;
     float temp = 0;
     if(act_func == "softmax"){
+
         while(i < row_size)
         {
-            temp += (float)exp(x[i]);
+            temp += expf(x->get_value(i));
             i++;
         }i=0;
+
         while(i < row_size)
         {
-            x[i] = x[i] / temp;
+            x->point_edit(i, expf(x->get_value(i)) / temp);
             i++;
         }
+
     }else if(act_func == "hardmax"){
         uint32_t highest_idx = 0;
+
         while(i < row_size - 1)
         {
-            if(x[i] < x[i+1])
+            if(x->get_value(i) < x->get_value(i+1)){
                 highest_idx = i+1;
-            i++;
-        }i=0;
+            }
+        }
+        
         while(i < row_size)
         {
-            if(i == highest_idx)
-                x[i] = 1;
-            else
-                x[i] = 0;
+            if(i == highest_idx){
+                x->point_edit(i, 1.0);
+            }else{
+                x->point_edit(i, 0.0);
+            }
         }
     }else{
         std::cout << "NO ACT_FUNC NAME: " << act_func << std::endl;
