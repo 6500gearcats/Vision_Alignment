@@ -99,15 +99,13 @@ void Sequencial :: run()
                 n_batch_history[batch_idx]->point_edit(i, this->network[this->lSize_arr.size() - 1]->get_point_neuron_value(i));
                 i++;
             }i=0;
-            batch_idx++;
-        }
-        if(this->num_batches != 0){
             tot_cost += __cost_value_derivative__(n_batch_history[batch_idx], this->y_data[input_idx], this->lSize_arr[this->lSize_arr.size() - 1], this->cost_name);
+            batch_idx++;
+
             if(((n+1) % this->num_batches) == 0){
                 this->record_data();
                 this->update_batch(tot_cost);
-                
-                std::cout << n << std::endl;
+
                 if(this->print_to_cons)
                     this->toCons(n+1,  n_batch_history);
                 batch_idx = 0;
@@ -151,7 +149,11 @@ void Sequencial :: update_stochatic(uint32_t y_index)
         for(int j = 0; j < lSize_arr[2]; ++j)
         {
             dirivative = -1 * __cost_value_derivative__(this->network[2]->get_point_neuron_value(j), this->y_data[y_index]->get_value(j), this->cost_name);
-            dirivative *= __activation_dirivative__(this->network[2]->get_point_neuron_value(j), this->act_func_arr[2]);
+            if(this->act_func_arr[lSize_arr.size()-1] == "softmax" || this->act_func_arr[lSize_arr.size()-1] == "hardmax"){
+                dirivative *= __activation_dirivative__(this->network[lSize_arr.size()-1]->get_neuron_mat(), this->act_func_arr[lSize_arr.size()-1]);
+            }else{
+                dirivative *= __activation_dirivative__(this->network[2]->get_point_neuron_value(j), this->act_func_arr[2]);
+            }
             dirivative *= this->network[1]->get_point_neuron_value(i);
             dirivative *= this->learning_rate;
             this->variable_history[1]->point_edit(i, j, this->variable_history[1]->get_value(i, j) - dirivative); //this->network[i]->get_point_weight_value(i, j));
@@ -162,11 +164,18 @@ void Sequencial :: update_stochatic(uint32_t y_index)
     {
         for(int j = 0; j < lSize_arr[1]; ++j)
         {
-            dirivative = -1 * __cost_value_derivative__(this->network[2]->get_point_neuron_value(j), this->y_data[y_index]->get_value(j), this->cost_name);
-            dirivative *= __activation_dirivative__(this->network[2]->get_point_neuron_value(j), this->act_func_arr[2]);
-            dirivative *= this->network[1]->get_point_neuron_value(i);
-            dirivative *= this->learning_rate;
-            this->variable_history[0]->point_edit(i, j, 1); //this->network[i]->get_point_weight_value(i, j));
+            for(int n = 0; n < lSize_arr[2]; ++n)
+            {
+                dirivative = -1 * __cost_value_derivative__(this->network[2]->get_point_neuron_value(n), this->y_data[y_index]->get_value(n), this->cost_name);
+                if(this->act_func_arr[lSize_arr.size()-1] == "softmax" || this->act_func_arr[lSize_arr.size()-1] == "hardmax"){
+                    dirivative *= __activation_dirivative__(this->network[lSize_arr.size()-1]->get_neuron_mat(), this->act_func_arr[lSize_arr.size()-1]);
+                }else{
+                    dirivative *= __activation_dirivative__(this->network[2]->get_point_neuron_value(n), this->act_func_arr[2]);
+                }
+                dirivative *=  __activation_dirivative__(this->network[1]->get_point_neuron_value(j), this->act_func_arr[1]);
+                dirivative *= this->learning_rate;
+                this->variable_history[0]->point_edit(i, j, this->variable_history[1]->get_value(i, j) - dirivative); //this->network[i]->get_point_weight_value(i, j));
+            }
         }
     }
     
@@ -197,7 +206,11 @@ void Sequencial :: update_batch(float tot_cost)
         for(int j = 0; j < lSize_arr[2]; ++j)
         {
             dirivative = tot_cost;
-            dirivative *= __activation_dirivative__(this->network[2]->get_point_neuron_value(j), this->act_func_arr[2]);
+            if(this->act_func_arr[lSize_arr.size()-1] == "softmax" || this->act_func_arr[lSize_arr.size()-1] == "hardmax"){
+                dirivative *= __activation_dirivative__(this->network[lSize_arr.size()-1]->get_neuron_mat(), this->act_func_arr[lSize_arr.size()-1]);
+            }else{
+                dirivative *= __activation_dirivative__(this->network[2]->get_point_neuron_value(j), this->act_func_arr[2]);
+            }
             dirivative *= this->network[1]->get_point_neuron_value(i);
             dirivative *= this->learning_rate;
             this->variable_history[1]->point_edit(i, j, this->variable_history[1]->get_value(i, j) - dirivative); //this->network[i]->get_point_weight_value(i, j));
@@ -209,7 +222,11 @@ void Sequencial :: update_batch(float tot_cost)
         for(int j = 0; j < lSize_arr[1]; ++j)
         {
             dirivative = tot_cost;
-            dirivative *= __activation_dirivative__(this->network[2]->get_point_neuron_value(j), this->act_func_arr[2]);
+            if(this->act_func_arr[lSize_arr.size()-1] == "softmax" || this->act_func_arr[lSize_arr.size()-1] == "hardmax"){
+                dirivative *= __activation_dirivative__(this->network[lSize_arr.size()-1]->get_neuron_mat(), this->act_func_arr[lSize_arr.size()-1]);
+            }else{
+                dirivative *= __activation_dirivative__(this->network[2]->get_point_neuron_value(j), this->act_func_arr[2]);
+            }
             dirivative *= this->network[1]->get_point_neuron_value(i);
             dirivative *= this->learning_rate;
             this->variable_history[0]->point_edit(i, j, 1); //this->network[i]->get_point_weight_value(i, j));
@@ -359,6 +376,7 @@ void Sequencial :: toCons(uint32_t iteration, Matrix **&n_values)
             std::cout << n_values[i]->get_value(j) << "    Real Value: " << this->y_data[i]->get_value(j) << std::endl;
             j++;
         }j=0;
+        std::cout << "\n";
         i++;
     }
 }

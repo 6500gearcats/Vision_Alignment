@@ -51,7 +51,8 @@ inline void __activate_value__(Matrix *&x, uint32_t row_size, std::string act_fu
             if(x->get_value(i) < x->get_value(i+1)){
                 highest_idx = i+1;
             }
-        }
+            i++;
+        }i=0;
         
         while(i < row_size)
         {
@@ -60,6 +61,7 @@ inline void __activate_value__(Matrix *&x, uint32_t row_size, std::string act_fu
             }else{
                 x->point_edit(i, 0.0);
             }
+            i++;
         }
     }else{
         std::cout << "NO ACT_FUNC NAME: " << act_func << std::endl;
@@ -83,6 +85,18 @@ inline float __activation_dirivative__(float x, std::string act_func)
     }else{
         std::cout << "NO ACT_FUNC NAME: " << act_func << std::endl;
         return -1.;
+    }
+}
+
+inline float __activation_dirivative__(Matrix *x, std::string act_func)
+{
+    if(act_func == "softmax"){
+        return 1.5;
+    }else if(act_func == "hardmax"){
+        return 1;
+    }else{
+        std::cout << "NO ACT_FUNC NAME: " << act_func << std::endl;
+        return 1;
     }
 }
 
