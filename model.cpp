@@ -291,7 +291,7 @@ void Sequencial :: format_output_data(std::vector<std::vector<float> > &out)
             j++;
         }j=0;
         i++;
-    }
+    } 
     out.clear();
 }
 
