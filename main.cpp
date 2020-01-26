@@ -34,13 +34,13 @@ int main(int argc, const char **argv)
     out[0][0] = 0; out[1][0] = 1; out[2][0] = 0; out[3][0] = 1;
     out[0][1] = 1; out[1][1] = 0; out[2][1] = 1; out[3][1] = 0;
 
-    Sequencial *model = new Sequencial(4, true, true, "HalfMeanSquaredErr", 0.01);
+    Sequencial *model = new Sequencial(400, false, true, "HalfMeanSquaredErr", 0.001);
 
     model->add(2, "sigmoid");
-    model->bias();
-    model->add(4, "sigmoid");
-    model->bias();
-    model->add(2, "softmax");
+    //model->bias();
+    model->add(9, "asinh");
+    //model->bias();
+    model->add(2, "hardmax");
 
     model->format_input_data(inp, 4);
     model->format_output_data(out);
