@@ -10,5 +10,5 @@ main.out: ${OBJS}
 clean:
 	rm -f *.o
 
-.c.o:
+.cpp.o:
 	${CC} ${CFLAG} -c $<
