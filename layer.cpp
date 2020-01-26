@@ -210,18 +210,21 @@ void Layer :: feed_forward(Layer *&next_layer)
 
 void Layer :: activate_output_layer()
 {
+    uint32_t i = 0;
     if(act_func == "softmax" || act_func == "hardmax"){
-        __activate_value__(this->neuron_values->get_matrix(), this->get_row(), this->act_func);
+        while(i < this->get_row())
+        {
+            __activate_value__(this->neuron_values, this->get_row(), this->act_func);
+            i++;
+        }
     }
     else{
-        uint32_t i = 0;
         while(i < this->get_row())
         {
             this->neuron_values->point_edit(i, __activate_value__(this->neuron_values->get_value(i), this->act_func));
             i++;
         }
     }
-    
 }
 
 void Layer :: dealloc_variables()
