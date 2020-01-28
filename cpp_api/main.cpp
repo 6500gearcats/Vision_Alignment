@@ -1,28 +1,11 @@
 #include <iostream>
 #include <vector>
 
+#include "optimize_trained_net.hpp"
 #include "model.hpp"
 
-void test(void)
+void run_test(void)
 {
-    int *a = (int *)calloc(56, sizeof(int));
-    for(int i = 0; i < 56; i++){
-        a[i] = i+1;
-    }
-
-    for(int i = 0; i < 7; i++)
-    {
-        for(int j=0; j<8; ++j)
-        {
-            std::cout << a[((7 * 8) - (8 * (7 - i))) + j] << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
-int main(int argc, const char **argv)
-{
-    std::cout << argv[0] << std::endl;
     std::vector<float> d;
     float **inp = (float **)calloc(4, sizeof(float  *));
     for(int i = 0; i < 4; ++i){inp[i] = (float*)calloc(2, sizeof(float));}
@@ -47,9 +30,22 @@ int main(int argc, const char **argv)
 
     model->initialize_global_variables();
     model->run();
+}
 
+int main(int argc, const char **argv)
+{
+    std::cout << argv[0] << std::endl;
+    
+    system("python3 ~/desktop/github/vision_alignment/TF/train.py");
+    std::vector<uint32_t> s, a;
+    s.push_back(2);
+    s.push_back(5);
+    s.push_back(8);
+    s.push_back(5);
+    s.push_back(2);
+    Network *net = new Network(s, a);
+    net->run();
+    //net->get_data("/Users/idler/Desktop/GitHub/Vision_Alignment/TF/out.txt");
 
-    // std::cout << "\n\n";
-    // test();
     return 0;
 }

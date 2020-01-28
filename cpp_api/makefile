@@ -1,4 +1,4 @@
-OBJS = layer.o model.o main.o
+OBJS = layer.o model.o optimize_trained_net.o main.o
 CFLAG = -Wall -g
 CC = clang++
 INCLUDE = 
