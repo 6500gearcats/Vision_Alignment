@@ -105,6 +105,7 @@ float *& Matrix :: get_matrix()
 Layer :: Layer(bool weight_range, uint32_t num_rows, uint32_t num_cols, std::string act_func, bool hasBias)
 {
     this->neuron_values = new Matrix(num_rows);
+
     this->weight_values = new Matrix(num_rows, num_cols);
     this->hasBias = hasBias;
     this->act_func = act_func;
@@ -182,7 +183,7 @@ void Layer :: feed_forward(Layer *&next_layer)
     uint32_t i = 0, j = 0;
     Matrix *temp = new Matrix(this->get_col());
     float node_input = 0;
-
+    
     while(i < this->get_row())
     {
         this->neuron_values->point_edit(i, __activate_value__(this->neuron_values->get_value(i), this->act_func));

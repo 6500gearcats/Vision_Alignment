@@ -19,6 +19,10 @@ inline float __activate_value__(float x, std::string act_func)
         return (float)asinh(x);
     }else if(act_func == "log"){
         return (float)log(x);
+    }else if(act_func == "cos"){
+        return cosf(x);
+    }else if(act_func == "linear"){
+        return x;
     }else{
         std::cout << "NO ACT_FUNC NAME: " << act_func << std::endl;
         return -1.;
